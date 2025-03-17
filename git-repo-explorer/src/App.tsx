@@ -1,5 +1,5 @@
 import React from "react"
-import {}
+import {useQuery, useMutation} from '@tanstack/react-query'
 
 const POSTS = [
   {id: 1, title: "Post 1"},
