@@ -14,6 +14,8 @@ const POSTS = [
     queryFn: ()=> wait(1000).then(()=> [...POSTS])
   })
 
+if(allPostQuery.isLoading) return <h1 className="text-green-600 text-xl p-5"> Loading ....</h1>
+if(allPostQuery)
   return(
     <h1 className="bg-blue-500 text-center text-white"> TanStack </h1>
   )
