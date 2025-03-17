@@ -8,6 +8,8 @@ const POSTS = [
 ]
 
  const App: React.FC = ()=>{
+ 
+ useQuery()
   return(
     <h1 className="bg-blue-500 text-center text-white"> TanStack </h1>
   )
