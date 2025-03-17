@@ -9,7 +9,11 @@ const POSTS = [
 
  const App: React.FC = ()=>{
  
- useQuery()
+  const allPostQuery = useQuery({
+    queryKey: ['theposts'],
+    queryFn: ()=> wait(1000).then(()=> [...POSTS])
+  })
+
   return(
     <h1 className="bg-blue-500 text-center text-white"> TanStack </h1>
   )
