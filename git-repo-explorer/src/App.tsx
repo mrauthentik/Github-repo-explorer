@@ -23,7 +23,7 @@ if(allPostQuery.isError) return <h2 className="text-red-700">Error: {JSON.string
 
       <h1 className="bg-blue-500 text-center text-white"> TanStack </h1>
       {
-        allPostQuery.data?.map((item)=> {
+        allPostQuery.data.map((item)=> {
           <div>{item.title} {item.id}</div>
         })
       }
