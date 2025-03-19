@@ -16,7 +16,17 @@ export const fetchRepos = async (query: string) =>{
                 const commitResponse = await fetch (
                     `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits?per_page=1`
                 );
+
+                if(!commitResponse.ok) {
+                    return { ...repo, commitCount: "N/A", latestCommitDate: "N/A"}
+                }
+                const commits = await commitResponse.json()
+                return {
+                    
+                }
             }
+
+            
         })
     )
 
