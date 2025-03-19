@@ -40,7 +40,16 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
                 📝 Commits: {repo.commitCount } | ⏳ Last Commit:{" "}
                 {new Date(repo.latestCommitDate).toDateString()}
               </p>
-              <p className="text-sm">Contributors : {repo.contributors_url}</p>
+              {/* <p className="text-sm">Contributors : {repo.contributors_url}</p> */}
+                 
+              <a
+                href={repo.contributors_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 font-bold"
+              >
+                {repo.contributors_url}
+              </a>
               <p className="text-sm">View : {repo.visibility}</p>
               <p className="text-sm">Built with : {repo.language}</p>
 
