@@ -1,32 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRepos } from "../api/githubApi";
-import { FaStar, FaCodeBranch, FaClock, FaEye } from "react-icons/fa";
+import { FaStar, FaCodeBranch, FaClock, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
-// Function to map languages to colors (GitHub-like)
-const languageColors: Record<string, string> = {
-  JavaScript: "bg-yellow-400",
-  TypeScript: "bg-blue-500",
-  Python: "bg-green-500",
-  Java: "bg-red-500",
-  HTML: "bg-orange-500",
-  CSS: "bg-indigo-500",
-  C: "bg-gray-500",
-  "C++": "bg-purple-500",
-  "C#": "bg-teal-500",
-  Go: "bg-blue-600",
-  Rust: "bg-orange-600",
-  PHP: "bg-purple-600",
-};
+// Language options for filtering
+const languages = ["JavaScript", "TypeScript", "Python", "Java", "C++", "C#", "PHP", "Go", "Rust"];
 
 interface RepoListProps {
   query: string;
 }
 
 const RepoList: React.FC<RepoListProps> = ({ query }) => {
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState("stars");
+  const [language, setLanguage] = useState<string | undefined>();
+
   const { data, error, isLoading } = useQuery({
-    queryKey: ["repos", query],
-    queryFn: () => fetchRepos(query),
+    queryKey: ["repos", query, page, sort, language],
+    queryFn: () => fetchRepos(query, page, sort, language),
     enabled: !!query,
   });
 
@@ -35,9 +26,38 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">
-      {data?.length ? (
+      {/* Filters & Sorting */}
+      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+        {/* Sorting Dropdown */}
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="border p-2 rounded bg-gray-100"
+        >
+          <option value="stars">Sort by Stars</option>
+          <option value="forks">Sort by Forks</option>
+          <option value="updated">Sort by Last Updated</option>
+        </select>
+
+        {/* Language Filter */}
+        <select
+          value={language || ""}
+          onChange={(e) => setLanguage(e.target.value || undefined)}
+          className="border p-2 rounded bg-gray-100"
+        >
+          <option value="">All Languages</option>
+          {languages.map((lang) => (
+            <option key={lang} value={lang}>
+              {lang}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Repository List */}
+      {data?.repos?.length ? (
         <ul className="space-y-6">
-          {data.map((repo: any) => {
+          {data.repos.map((repo: any) => {
             const latestCommitDate = repo.latestCommitDate
               ? new Date(repo.latestCommitDate).toLocaleDateString("en-US", {
                   weekday: "short",
@@ -49,7 +69,6 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
 
             return (
               <li key={repo.id} className="p-5 bg-gray-100 rounded-lg shadow-md transition-all hover:shadow-lg">
-                {/* Repo Header */}
                 <div className="flex items-center gap-4">
                   <img
                     src={repo.owner.avatar_url}
@@ -69,7 +88,7 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
                   </div>
                 </div>
 
-                {/* Repo Stats */}
+                {/* Stats */}
                 <div className="mt-3 flex items-center justify-between text-gray-700 text-sm">
                   <p className="flex items-center gap-2">
                     <FaStar className="text-yellow-500" /> {repo.stargazers_count}
@@ -85,16 +104,7 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
                 {/* Additional Info */}
                 <div className="mt-3 text-sm text-gray-600">
                   <p>
-                    <strong className="text-gray-900">Language:</strong>{" "}
-                    <span className={`inline-block px-2 py-1 text-white text-xs font-semibold rounded-full ${
-                      languageColors[repo.language] || "bg-gray-500"
-                    }`}>
-                      {repo.language || "Not specified"}
-                    </span>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <FaEye className="text-blue-500" />
-                    <strong className="text-gray-900">Visibility:</strong> {repo.visibility || "Unknown"}
+                    <strong className="text-gray-900">Language:</strong> {repo.language || "Not specified"}
                   </p>
                   <p>
                     <strong className="text-gray-900">Commits:</strong> {repo.commitCount || "Unknown"}
@@ -107,6 +117,24 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
       ) : (
         <p className="text-center text-gray-500 text-lg">🔍 No repositories found.</p>
       )}
+
+      {/* Pagination Buttons */}
+      <div className="flex justify-between items-center mt-6">
+        <button
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          disabled={page === 1}
+          className={`px-4 py-2 rounded ${page === 1 ? "bg-gray-300" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+        >
+          <FaArrowLeft /> Previous
+        </button>
+        <span className="text-gray-700">Page {page}</span>
+        <button
+          onClick={() => setPage((prev) => prev + 1)}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Next <FaArrowRight />
+        </button>
+      </div>
     </div>
   );
 };
