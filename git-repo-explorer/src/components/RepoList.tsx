@@ -26,6 +26,7 @@ const RepoList: React.FC<RepoListProps> = ({query}) =>{
                 {repo.name}
               </a>
               <p className="text-sm">⭐ {repo.stargazers_count} | Forks: {repo.forks_count}</p>
+              <p className="text-sm">🚀Repos: {repo.data.public_repos} | Forks: {repo.forks_count}</p>
                     </li>
                 ))}
             </ul>
