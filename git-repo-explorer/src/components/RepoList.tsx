@@ -15,6 +15,15 @@ const RepoList: React.FC<RepoListProps> = ({query}) =>{
 
   if(isLoading) return <p className="p-4" > Loading...</p>
   if(error) return <p className="p-4 text-red-500">Error fetching repos</p>
+
+  return (
+    <div className="p-4">
+        {
+            
+        }
+    </div>
+  )
+
 }
 
 export default RepoList
