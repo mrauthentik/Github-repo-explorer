@@ -12,7 +12,7 @@ const RepoList: React.FC<RepoListProps> = ({query}) =>{
     queryFn: ()=> fetchRepos(query),
     enabled: !!query
   })
-
+ 
 }
 
-ex
+export default RepoList
