@@ -1,39 +1,39 @@
-export const fetchRepos = async (query: string) =>{
-    const response = await fetch(`https://api.github.com/search/repositories?q=${query}`)
+import axios from "axios";
 
-    if(!response.ok){
-        throw new Error('Failed to fetch repositories')
-        console.log('Failed to fetch repos')
-    }
+export const fetchRepos = async (query: string) => {
+  const repoResponse = await axios.get(
+    `https://api.github.com/search/repositories?q=${query}&per_page=5`
+  );
 
-    const data = await response.json()
-    const repos = data.items || []
+  if (!repoResponse.data.items) {
+    throw new Error("Failed to fetch repositories");
+  }
 
-    //This Logic Fetches commit details for each repo
-    const reposWithCommits = await Promise.all(
-        repos.map(async (repo: any)=> {
-            try{
-                const commitResponse = await fetch (
-                    `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits?per_page=1`
-                );
+  const repos = await Promise.all(
+    repoResponse.data.items.map(async (repo: any) => {
+      try {
+        // Fetch commit history
+        const commitsResponse = await axios.get(
+          `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits?per_page=1`
+        );
 
-                if(!commitResponse.ok) {
-                    return { ...repo, commitCount: "N/A", latestCommitDate: "N/A"}
-                }
-                const commits = await commitResponse.json()
-                return {
-                    ...repos,
-                    commitCount: commits.length,
-                    lastestCommitDate: commits[0]?.commit?.committer?.date || "No"
-                }
-            } catch (error:unknown){
-                console.error(`Error fetching commits for ${repo.name}:`, error);
-                return { ...repo, commitCount: "N/A", latestCommitDate: "N/A" };
-            }
+        const latestCommit = commitsResponse.data[0];
+        return {
+          ...repo,
+          commitCount: commitsResponse.data.length, // Only gives 1 page unless paginated
+          latestCommitDate: latestCommit?.commit.author.date || "N/A",
+        };
+      } catch (error) {
+        console.log(error)
+        return {
+          ...repo,
+          commitCount: "Unknown",
+          latestCommitDate: "Unknown",
+         
+        };
+      }
+    })
+  );
 
-            
-        })
-    )
-
-    return reposWithCommits
-}
+  return repos;
+};
