@@ -3,7 +3,7 @@ import axios from "axios";
 export const fetchRepos = async (query: string, page: number = 1, sort: string = "stars", language?: string) => {
   try {
     // Limit to 5 repositories per page to reduce API requests
-    const url = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=5&page=${page}`;
+    const url = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=10&page=${page}`;
 
     const repoResponse = await axios.get(url, {
       headers: { Accept: "application/vnd.github.v3+json" },
