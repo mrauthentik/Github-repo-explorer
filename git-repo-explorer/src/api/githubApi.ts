@@ -1,8 +1,4 @@
 import axios from "axios";
-import.meta.env.VITE_GITHUB_TOKEN;
-
-// 🔒 Store your GitHub token (Replace with your actual token)
-const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN
 
 // Function to fetch repositories
 export const fetchRepos = async (query: string, page: number = 1, sort: string = "stars", language?: string) => {
@@ -11,11 +7,7 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
 
     const url = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=5&page=${page}`;
 
-    const repoResponse = await axios.get(url, {
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`, // 🔑 Authenticate requests
-      },
-    });
+    const repoResponse = await axios.get(url); // 🔥 Removed Authorization header
 
     if (!repoResponse.data.items.length) {
       throw new Error("No repositories found.");
@@ -24,10 +16,9 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
     const repos = await Promise.all(
       repoResponse.data.items.map(async (repo: any) => {
         try {
-          // Fetch commits (🔑 Include Authorization header)
+          // Fetch commits without authentication
           const commitsResponse = await axios.get(
-            `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits?per_page=1`,
-            { headers: { Authorization: `token ${GITHUB_TOKEN}` } }
+            `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits?per_page=1`
           );
 
           // Check 'Link' header for commit count
@@ -48,7 +39,7 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
             commitCount: totalCommits,
             latestCommitDate: latestCommit?.commit?.author?.date || "Unknown",
           };
-        } catch (error:any) {
+        } catch (error: any) {
           console.log("Error fetching commits:", error.response?.data || error.message);
           return {
             ...repo,
@@ -60,7 +51,7 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
     );
 
     return { repos, totalCount: repoResponse.data.total_count };
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("GitHub API Error:", error.response?.data || error.message);
     throw error;
   }
