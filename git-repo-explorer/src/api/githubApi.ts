@@ -48,7 +48,7 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
             latestCommitDate: latestCommit?.commit?.author?.date || "Unknown",
           };
         } catch (error:any) {
-          console.error("Error fetching commits:", error.response?.data || error.message);
+          console.log("Error fetching commits:", error.response?.data || error.message);
           return {
             ...repo,
             commitCount: "Unknown",
