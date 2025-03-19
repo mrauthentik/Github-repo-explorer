@@ -22,7 +22,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         onChange={(e) => setQuery(e.target.value)}
         className="border p-2 rounded w-full"
       />
-      <button onClick={handleSearch} className="bg-blue-500 text-white p-2 rounded">
+      <button onClick={handleSearch} className="bg-blue-500 text-white p-2 rounded cursor-pointer">
         Search
       </button>
     </div>
