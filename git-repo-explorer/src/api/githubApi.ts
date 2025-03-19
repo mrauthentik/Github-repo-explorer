@@ -26,7 +26,9 @@ export const fetchRepos = async (query: string) =>{
                     commitCount: commits.length,
                     lastestCommitDate: commits[0]?.commit?.committer?.date || "No"
                 }
-            } catch (error:unknown)
+            } catch (error:unknown){
+                
+            }
 
             
         })
