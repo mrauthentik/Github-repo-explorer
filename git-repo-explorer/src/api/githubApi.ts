@@ -22,7 +22,9 @@ export const fetchRepos = async (query: string) =>{
                 }
                 const commits = await commitResponse.json()
                 return {
-                    
+                    ...repos,
+                    commitCount: commits.length,
+                    lastestCommitDate: commits[0]?.commit?.committer?.date || "No"
                 }
             }
 
