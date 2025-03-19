@@ -6,3 +6,6 @@ interface RepoListProps {
     query: string
 }
 
+const RepoList: React.FC<RepoListProps> = ({query}) =>{
+
+}
