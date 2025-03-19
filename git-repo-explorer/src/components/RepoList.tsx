@@ -20,8 +20,8 @@ const RepoList: React.FC<RepoListProps> = ({query}) =>{
     <div className="p-4">
         {data.items?.length? (
             <ul>
-                {data.items.map((repo:any) => (
-                    <li></li>
+                {data.items.map((repo: any) => (
+                    <li ></li>
                 ))}
             </ul>
         ):(
