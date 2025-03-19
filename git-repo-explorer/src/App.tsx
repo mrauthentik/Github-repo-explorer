@@ -1,5 +1,6 @@
 import React from "react"
-import {useQuery, useMutation} from '@tanstack/react-query'
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
+
 
 interface Post {
   id: string;
@@ -7,14 +8,15 @@ interface Post {
 }
 
 const POSTS = [
-  {id: 1, title: "Post 1"},
-  {id: 2, title: "Post 2"},
+  {id: "1", title: "Post 1"},
+  {id: "2", title: "Post 2"},
 
 ]
 
  const App: React.FC = ()=>{
- 
-  const allPostQuery = useQuery({
+ const queryClient = useQueryClient()
+  
+ const allPostQuery = useQuery({
     queryKey: ['theposts'],
     queryFn: ()=> wait(1000).then(()=> [...POSTS])
   })
@@ -24,6 +26,9 @@ const POSTS = [
       return (
         wait(1000).then(()=> POSTS.push({id: crypto.randomUUID(), title}))
       )
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['theposts'] })
     }
   })
 
@@ -41,6 +46,12 @@ if(allPostQuery.isError) return <h2 className="text-red-700">Error: {JSON.string
         })
       }
       </div> 
+      <button 
+            disabled={newPost.isPending}
+            className="bg-blue-500 p-4 rounded"  
+            onClick={()=>newPost.mutate({title: "New Post"})}
+            >
+              Add New   </button>
     </div>
   )
 }
