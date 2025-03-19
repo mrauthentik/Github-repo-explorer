@@ -1,11 +1,15 @@
 import axios from "axios";
 
-export const fetchRepos = async (query: string) => {
+export const fetchRepos = async (query: string, page: number = 1, sort: string = "stars", language?: string) => {
   try {
-    const repoResponse = await axios.get(
-      `https://api.github.com/search/repositories?q=${query}&per_page=5`
-    );
+    let url = `https://api.github.com/search/repositories?q=${query}&sort=${sort}&order=desc&per_page=5&page=${page}`;
+    
+    if (language) {
+      url += `+language:${language}`;
+    }
 
+    const repoResponse = await axios.get(url);
+    
     if (!repoResponse.data.items) {
       throw new Error("Failed to fetch repositories");
     }
@@ -13,25 +17,31 @@ export const fetchRepos = async (query: string) => {
     const repos = await Promise.all(
       repoResponse.data.items.map(async (repo: any) => {
         try {
-          // Fetch latest commit
+          // Fetch commit history (get total commit count)
           const commitsResponse = await axios.get(
             `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits?per_page=1`
           );
 
-          const latestCommit = commitsResponse.data[0];
+          // Check if there's a 'Link' header to determine total commits
+          const linkHeader = commitsResponse.headers["link"];
+          let totalCommits = commitsResponse.data.length;
 
-          // Fetch total commit count (GitHub API workaround)
-          const commitStatsResponse = await axios.get(
-            `https://api.github.com/repos/${repo.owner.login}/${repo.name}`
-          );
+          if (linkHeader) {
+            const lastPageMatch = linkHeader.match(/&page=(\d+)>; rel="last"/);
+            if (lastPageMatch) {
+              totalCommits = parseInt(lastPageMatch[1], 10);
+            }
+          }
+
+          const latestCommit = commitsResponse.data[0];
 
           return {
             ...repo,
-            commitCount: commitStatsResponse.data.forks_count, // Approximate commit count (GitHub API limitation)
-            latestCommitDate: latestCommit?.commit.author.date || "N/A",
+            commitCount: totalCommits,
+            latestCommitDate: latestCommit?.commit?.author?.date || "Unknown",
           };
         } catch (error) {
-          console.error(`Error fetching commits for ${repo.name}:`, error);
+          console.log("Error fetching commits:", error);
           return {
             ...repo,
             commitCount: "Unknown",
@@ -43,7 +53,7 @@ export const fetchRepos = async (query: string) => {
 
     return repos;
   } catch (error) {
-    throw new Error("Failed to fetch repositories");
-    console.log(error)
+    console.error("Error fetching repositories:", error);
+    throw error;
   }
 };
