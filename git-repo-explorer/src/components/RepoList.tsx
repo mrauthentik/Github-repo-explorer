@@ -30,7 +30,7 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
                 rel="noopener noreferrer"
                 className="text-blue-500 font-bold"
               >
-                {repo.name}
+               <span className="text-xl text-blue-600">Repo:</span> {repo.name}
               </a>
               <p className="text-sm">
                 Repo Author: {repo.full_name} <br />
