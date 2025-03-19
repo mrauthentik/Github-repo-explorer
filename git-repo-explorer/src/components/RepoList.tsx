@@ -21,7 +21,12 @@ const RepoList: React.FC<RepoListProps> = ({query}) =>{
         {data.items?.length? (
             <ul>
                 {data.items.map((repo: any) => (
-                    <li ></li>
+                    <li key={repo.id} className="border-b p-2">
+                        <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                {repo.name}
+              </a>
+              <p className="text-sm">⭐ {repo.stargazers_count} | Forks: {repo.forks_count}</p>
+                    </li>
                 ))}
             </ul>
         ):(
