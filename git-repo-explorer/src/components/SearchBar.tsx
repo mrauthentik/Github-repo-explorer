@@ -17,7 +17,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         <div className="flex gap-2 p-4">
       <input
         type="text"
-        placeholder="Search GitHub Repos..."
+        placeholder="Search GitHub Repos... "
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="border p-2 rounded w-full"
