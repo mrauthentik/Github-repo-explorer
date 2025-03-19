@@ -27,25 +27,26 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">
       {/* Filters & Sorting */}
-      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+    {/* Filters & Sorting Section */}
+      <div className="flex flex-wrap gap-4 items-center justify-between p-4 bg-gray-50 shadow-sm rounded-md">
         {/* Sorting Dropdown */}
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value)}
-          className="border p-2 rounded bg-gray-100"
+          className="border px-4 py-2 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
         >
-          <option value="stars">Sort by Stars</option>
-          <option value="forks">Sort by Forks</option>
-          <option value="updated">Sort by Last Updated</option>
+          <option value="stars">⭐ Sort by Stars</option>
+          <option value="forks">🔀 Sort by Forks</option>
+          <option value="updated">⏳ Last Updated</option>
         </select>
 
         {/* Language Filter */}
         <select
           value={language || ""}
           onChange={(e) => setLanguage(e.target.value || undefined)}
-          className="border p-2 rounded bg-gray-100"
+          className="border px-4 py-2 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">All Languages</option>
+          <option value="">🌍 All Languages</option>
           {languages.map((lang) => (
             <option key={lang} value={lang}>
               {lang}
@@ -53,6 +54,7 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
           ))}
         </select>
       </div>
+
 
       {/* Repository List */}
       {data?.repos?.length ? (
@@ -119,22 +121,26 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
       )}
 
       {/* Pagination Buttons */}
-      <div className="flex justify-between items-center mt-6">
-        <button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-          className={`px-4 py-2 rounded ${page === 1 ? "bg-gray-300" : "bg-blue-500 text-white hover:bg-blue-600"}`}
-        >
-          <FaArrowLeft /> Previous
-        </button>
-        <span className="text-gray-700">Page {page}</span>
-        <button
-          onClick={() => setPage((prev) => prev + 1)}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Next <FaArrowRight />
-        </button>
-      </div>
+      <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+            className={`px-4 py-2 flex items-center gap-2 rounded-lg text-white ${
+              page === 1 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
+            <FaArrowLeft /> Previous
+          </button>
+
+          <span className="text-lg font-medium text-gray-700">Page {page}</span>
+
+          <button
+            onClick={() => setPage((prev) => prev + 1)}
+            className="px-4 py-2 flex items-center gap-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Next <FaArrowRight />
+          </button>
+    </div>
     </div>
   );
 };
