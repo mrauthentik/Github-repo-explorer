@@ -1,44 +1,54 @@
 import axios from "axios";
 
+// 🔒 Store your GitHub token (Replace with your actual token)
+const GITHUB_TOKEN = "your_github_personal_access_token";
+
+// Function to fetch repositories
 export const fetchRepos = async (query: string, page: number = 1, sort: string = "stars", language?: string) => {
   try {
-    // Limit to 10 repositories per page to reduce API requests
-    const url = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=10&page=${page}`;
+    if (!query) throw new Error("Search query is empty.");
+
+    let url = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=5&page=${page}`;
 
     const repoResponse = await axios.get(url, {
-      headers: { Accept: "application/vnd.github.v3+json" },
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`, // 🔑 Authenticate requests
+      },
     });
 
-    if (!repoResponse.data || !repoResponse.data.items || repoResponse.data.items.length === 0) {
+    if (!repoResponse.data.items.length) {
       throw new Error("No repositories found.");
     }
 
-    // Only fetch commit details for the first 5 repos to save requests
     const repos = await Promise.all(
-      repoResponse.data.items.map(async (repo: any, index: number) => {
-        if (index >= 5) {
-          return {
-            ...repo,
-            commitCount: "Not fetched",
-            latestCommitDate: "Not fetched",
-          };
-        }
-
+      repoResponse.data.items.map(async (repo: any) => {
         try {
+          // Fetch commits (🔑 Include Authorization header)
           const commitsResponse = await axios.get(
             `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits?per_page=1`,
-            { headers: { Accept: "application/vnd.github.v3+json" } }
+            { headers: { Authorization: `token ${GITHUB_TOKEN}` } }
           );
+
+          // Check 'Link' header for commit count
+          const linkHeader = commitsResponse.headers["link"];
+          let totalCommits = commitsResponse.data.length;
+
+          if (linkHeader) {
+            const lastPageMatch = linkHeader.match(/&page=(\d+)>; rel="last"/);
+            if (lastPageMatch) {
+              totalCommits = parseInt(lastPageMatch[1], 10);
+            }
+          }
 
           const latestCommit = commitsResponse.data[0];
 
           return {
             ...repo,
-            commitCount: commitsResponse.data.length || "Unknown",
+            commitCount: totalCommits,
             latestCommitDate: latestCommit?.commit?.author?.date || "Unknown",
           };
         } catch (error) {
-          console.log("Error fetching commits:", error);
+          console.error("Error fetching commits:", error.response?.data || error.message);
           return {
             ...repo,
             commitCount: "Unknown",
@@ -48,9 +58,9 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
       })
     );
 
-    return repos;
+    return { repos, totalCount: repoResponse.data.total_count };
   } catch (error) {
-    console.error("Error fetching repositories:", error);
+    console.error("GitHub API Error:", error.response?.data || error.message);
     throw error;
   }
 };
