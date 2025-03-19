@@ -21,7 +21,7 @@ export const fetchRepos = async (query: string) => {
         return {
           ...repo,
           commitCount: commitsResponse.data.length, // Only gives 1 page unless paginated
-          latestCommitDate: latestCommit?.commit.author.date || "N/A",
+          latestCommitDate: latestCommit?.commit.author.date,
         };
       } catch (error) {
         console.log(error)

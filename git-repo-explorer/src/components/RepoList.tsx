@@ -22,6 +22,8 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
         <ul>
           {data.map((repo: any) => (
             <li key={repo.id} className="border-b p-4">
+                <img src={repo.owner.avatar_url} alt="repo-image" />
+                
               <a
                 href={repo.html_url}
                 target="_blank"
@@ -31,12 +33,15 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
                 {repo.name}
               </a>
               <p className="text-sm">
+                Repo Author: {repo.full_name} <br />
                 ⭐ {repo.stargazers_count} | Forks: {repo.forks_count}
               </p>
               <p className="text-sm">
                 📝 Commits: {repo.commitCount } | ⏳ Last Commit:{" "}
                 {new Date(repo.latestCommitDate).toDateString()}
               </p>
+              <p className="text-sm">Contributors : {repo.contributors_url}</p>
+              <p className="text-sm">View : {repo.user_view_type}</p>
             </li>
           ))}
         </ul>
