@@ -7,5 +7,12 @@ interface RepoListProps {
 }
 
 const RepoList: React.FC<RepoListProps> = ({query}) =>{
+  const {data, error, isLoading} = useQuery({
+    queryKey: ['repos', query],
+    queryFn: ()=> fetchRepos(query),
+    enabled: !!query
+  })
 
 }
+
+ex
