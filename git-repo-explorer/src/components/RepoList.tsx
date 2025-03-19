@@ -1,43 +1,50 @@
-import React from "react"
-import {useQuery} from '@tanstack/react-query'
-import { fetchRepos } from "../api/githubApi"
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchRepos } from "../api/githubApi";
 
 interface RepoListProps {
-    query: string
+  query: string;
 }
 
-const RepoList: React.FC<RepoListProps> = ({query}) =>{
-  const {data, error, isLoading} = useQuery({
-    queryKey: ['repos', query],
-    queryFn: ()=> fetchRepos(query),
-    enabled: !!query
-  })
+const RepoList: React.FC<RepoListProps> = ({ query }) => {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["repos", query],
+    queryFn: () => fetchRepos(query),
+    enabled: !!query,
+  });
 
-  if(isLoading) return <p className="p-4" > Loading...</p>
-  if(error) return <p className="p-4 text-red-500">Error fetching repos</p>
+  if (isLoading) return <p className="p-4">Loading...</p>;
+  if (error) return <p className="p-4 text-red-500">Error fetching repos</p>;
 
   return (
     <div className="p-4">
-        {data.items?.length? (
-            <ul>
-                {data.items.map((repo: any) => (
-                    <li key={repo.id} className="border-b p-2">
-                        <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+      {data?.length ? (
+        <ul>
+          {data.map((repo: any) => (
+            <li key={repo.id} className="border-b p-4">
+              <a
+                href={repo.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 font-bold"
+              >
                 {repo.name}
               </a>
-              <p className="text-sm">⭐ {repo.stargazers_count} | Forks: {repo.forks_count}</p>
-              {/* <p className="text-sm">🚀Repos: {repo.data.public_repos} | Forks: {repo.forks_count}</p> */}
-                    </li>
-                ))}
-            </ul>
-        ):(
-            <p> No Repositories found</p>
-        )
-
-        }
+              <p className="text-sm">
+                ⭐ {repo.stargazers_count} | Forks: {repo.forks_count}
+              </p>
+              <p className="text-sm">
+                📝 Commits: {repo.commitCount} | ⏳ Last Commit:{" "}
+                {new Date(repo.latestCommitDate).toLocaleString()}
+              </p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No Repositories found</p>
+      )}
     </div>
-  )
+  );
+};
 
-}
-
-export default RepoList
+export default RepoList;
