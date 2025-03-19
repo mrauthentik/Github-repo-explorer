@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // 🔒 Store your GitHub token (Replace with your actual token)
-const GITHUB_TOKEN = "your_github_personal_access_token";
+const GITHUB_TOKEN = "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";
 
 // Function to fetch repositories
 export const fetchRepos = async (query: string, page: number = 1, sort: string = "stars", language?: string) => {
