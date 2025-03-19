@@ -37,7 +37,8 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
                Stars⭐ {repo.stargazers_count} | Forks: {repo.forks_count}
               </p>
               <p className="text-sm">
-                📝 Commits: {repo.commitCount } | ⏳ Last Commit:{" "}
+                📝 Commits: {repo.commitCount} | ⏳ Last Commit:{" "}
+                {console.log("Commit:",repo.commitCount)}
                 {new Date(repo.latestCommitDate).toDateString()}
               </p>
               {/* <p className="text-sm">Contributors : {repo.contributors_url}</p> */}
