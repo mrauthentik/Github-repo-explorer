@@ -46,7 +46,7 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
           onChange={(e) => setLanguage(e.target.value || undefined)}
           className="border px-4 py-2 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">🌍 All Languages</option>
+          <option value="">🛠️ All Languages</option>
           {languages.map((lang) => (
             <option key={lang} value={lang}>
               {lang}
