@@ -27,12 +27,13 @@ export const fetchRepos = async (query: string) =>{
                     lastestCommitDate: commits[0]?.commit?.committer?.date || "No"
                 }
             } catch (error:unknown){
-                
+                console.error(`Error fetching commits for ${repo.name}:`, error);
+                return { ...repo, commitCount: "N/A", latestCommitDate: "N/A" };
             }
 
             
         })
     )
 
-    return response.json()
+    return reposWithCommits
 }
