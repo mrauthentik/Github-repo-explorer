@@ -8,7 +8,7 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
   try {
     if (!query) throw new Error("Search query is empty.");
 
-    let url = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=5&page=${page}`;
+    let const = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=5&page=${page}`;
 
     const repoResponse = await axios.get(url, {
       headers: {
@@ -47,7 +47,7 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
             commitCount: totalCommits,
             latestCommitDate: latestCommit?.commit?.author?.date || "Unknown",
           };
-        } catch (error) {
+        } catch (error:any) {
           console.error("Error fetching commits:", error.response?.data || error.message);
           return {
             ...repo,
@@ -59,7 +59,7 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
     );
 
     return { repos, totalCount: repoResponse.data.total_count };
-  } catch (error) {
+  } catch (error:any) {
     console.error("GitHub API Error:", error.response?.data || error.message);
     throw error;
   }
