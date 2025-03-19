@@ -41,7 +41,9 @@ const RepoList: React.FC<RepoListProps> = ({ query }) => {
                 {new Date(repo.latestCommitDate).toDateString()}
               </p>
               <p className="text-sm">Contributors : {repo.contributors_url}</p>
-              <p className="text-sm">View : {repo.user_view_type}</p>
+              <p className="text-sm">View : {repo.visibility}</p>
+              <p className="text-sm">Built with : {repo.language}</p>
+
             </li>
           ))}
         </ul>
