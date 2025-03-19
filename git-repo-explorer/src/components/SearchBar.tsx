@@ -26,7 +26,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         onClick={handleSearch}
         className="bg-blue-600 text-white px-5 py-3 rounded-md font-medium shadow-sm hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        Search
+        Search ✨
       </button>
     </div>
   );
