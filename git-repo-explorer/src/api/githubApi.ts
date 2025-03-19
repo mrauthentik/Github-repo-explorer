@@ -1,28 +1,36 @@
 import axios from "axios";
+import.meta.env.VITE_GITHUB_TOKEN;
 
+// 🔒 Store your GitHub token (Replace with your actual token)
+const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN
+
+// Function to fetch repositories
 export const fetchRepos = async (query: string, page: number = 1, sort: string = "stars", language?: string) => {
   try {
-    let url = `https://api.github.com/search/repositories?q=${query}&sort=${sort}&order=desc&per_page=5&page=${page}`;
-    
-    if (language) {
-      url += `+language:${language}`;
-    }
+    if (!query) throw new Error("Search query is empty.");
 
-    const repoResponse = await axios.get(url);
-    
-    if (!repoResponse.data.items) {
-      throw new Error("Failed to fetch repositories");
+    const url = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=5&page=${page}`;
+
+    const repoResponse = await axios.get(url, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`, // 🔑 Authenticate requests
+      },
+    });
+
+    if (!repoResponse.data.items.length) {
+      throw new Error("No repositories found.");
     }
 
     const repos = await Promise.all(
       repoResponse.data.items.map(async (repo: any) => {
         try {
-          // Fetch commit history (get total commit count)
+          // Fetch commits (🔑 Include Authorization header)
           const commitsResponse = await axios.get(
-            `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits?per_page=1`
+            `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits?per_page=1`,
+            { headers: { Authorization: `token ${GITHUB_TOKEN}` } }
           );
 
-          // Check if there's a 'Link' header to determine total commits
+          // Check 'Link' header for commit count
           const linkHeader = commitsResponse.headers["link"];
           let totalCommits = commitsResponse.data.length;
 
@@ -40,8 +48,8 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
             commitCount: totalCommits,
             latestCommitDate: latestCommit?.commit?.author?.date || "Unknown",
           };
-        } catch (error) {
-          console.log("Error fetching commits:", error);
+        } catch (error:any) {
+          console.log("Error fetching commits:", error.response?.data || error.message);
           return {
             ...repo,
             commitCount: "Unknown",
@@ -51,9 +59,9 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
       })
     );
 
-    return repos;
-  } catch (error) {
-    console.error("Error fetching repositories:", error);
+    return { repos, totalCount: repoResponse.data.total_count };
+  } catch (error:any) {
+    console.error("GitHub API Error:", error.response?.data || error.message);
     throw error;
   }
 };
