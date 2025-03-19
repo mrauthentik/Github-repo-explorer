@@ -8,7 +8,7 @@ export const fetchRepos = async (query: string, page: number = 1, sort: string =
   try {
     if (!query) throw new Error("Search query is empty.");
 
-    let const = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=5&page=${page}`;
+    const url = `https://api.github.com/search/repositories?q=${query}${language ? `+language:${language}` : ""}&sort=${sort}&order=desc&per_page=5&page=${page}`;
 
     const repoResponse = await axios.get(url, {
       headers: {
